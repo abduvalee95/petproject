@@ -13,6 +13,7 @@ import { renderDashboard } from './ui/dashboard.js';
 import { renderStudentModal } from './ui/modal.js';
 import { renderReports } from './ui/reports.js';
 import { createShell } from './ui/shell.js';
+import { createLoginView } from './ui/login.js';
 import { clearStudentForm, fillStudentForm, readStudentForm, setFormMode } from './ui/studentForm.js';
 import { renderStudentsTable } from './ui/studentsTable.js';
 import { showToast } from './ui/toast.js';
@@ -36,6 +37,41 @@ class App {
   }
 
   init() {
+    this.checkAuth();
+  }
+
+  checkAuth() {
+    const authUser = localStorage.getItem('edu-crm-auth');
+    if (authUser) {
+      this.initShell();
+    } else {
+      this.initLogin();
+    }
+  }
+
+  initLogin() {
+    this.root.innerHTML = createLoginView();
+    const form = this.root.querySelector('#loginForm');
+    const errorMsg = this.root.querySelector('#loginError');
+    
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const login = form.username.value.trim();
+      const pass = form.password.value;
+      
+      // Hardcoded users
+      const isValid = (login === 'admin' && pass === 'admin123') || (login === 'user' && pass === 'user123');
+      
+      if (isValid) {
+        localStorage.setItem('edu-crm-auth', login);
+        this.initShell();
+      } else {
+        errorMsg.style.display = 'block';
+      }
+    });
+  }
+
+  initShell() {
     this.root.innerHTML = createShell();
     this.cacheDom();
     this.bindEvents();
@@ -129,6 +165,12 @@ class App {
   }
 
   handleAction(action, trigger) {
+    if (action === 'logout') {
+      localStorage.removeItem('edu-crm-auth');
+      this.initLogin();
+      return;
+    }
+
     if (action === 'toggle-sidebar') {
       this.toggleSidebar();
       return;

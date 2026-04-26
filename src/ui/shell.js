@@ -43,6 +43,7 @@ export function createShell() {
         </nav>
 
         <div class="sidebar-footer">
+          <button type="button" class="btn btn-secondary" data-action="logout" style="width: 100%; margin-bottom: 12px; justify-content: center;">Выйти из системы</button>
           <button type="button" class="reset-btn" data-action="reset-data">
             Сбросить demo-данные
           </button>
