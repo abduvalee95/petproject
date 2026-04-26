@@ -296,7 +296,9 @@ export function createShell() {
             </button>
           </div>
           <div class="modal-body" id="modalBody"></div>
-          <div class="modal-footer">
+          <div class="modal-footer" style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button type="button" class="btn" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;" data-action="delete-student">Удалить</button>
+            <div style="flex-grow: 1;"></div>
             <button type="button" class="btn btn-secondary" data-action="close-modal">Закрыть</button>
             <button type="button" class="btn btn-primary" data-action="edit-student">Редактировать</button>
           </div>

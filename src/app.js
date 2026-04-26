@@ -215,6 +215,17 @@ class App {
       }
       return;
     }
+
+    if (action === 'delete-student') {
+      if (this.modalStudentId && confirm('Вы уверены, что хотите удалить этого ученика?')) {
+        this.students = this.students.filter(entry => entry.id !== this.modalStudentId);
+        saveStudents(this.students);
+        this.updateFilters(true);
+        this.closeModal();
+        this.toast('Ученик удален.', 'success');
+      }
+      return;
+    }
   }
 
   handleSubmit(event) {
