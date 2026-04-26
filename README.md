@@ -1,4 +1,4 @@
-# Учебный центр CRM Demo
+# Билим Нуру - Окуу Борбору CRM Demo
 
 Статический portfolio-ready demo для управления учениками и оплатами учебного центра. Проект собран на `Vite + Vanilla JS`, хранит состояние в `localStorage` и готов к деплою на Vercel или Netlify без backend-части.
 
