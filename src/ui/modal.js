@@ -14,7 +14,7 @@ export function renderStudentModal(node, student) {
     </div>
 
     <div class="detail-courses">
-      ${student.courses.map(renderCourseBadge).join('')}
+      ${student.courses.flatMap((c) => c.split(',').map((p) => p.trim())).map(renderCourseBadge).join('')}
       <span class="badge badge--${statusTone(status)}">${getStatusLabel(status)}</span>
     </div>
 

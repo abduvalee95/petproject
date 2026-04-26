@@ -78,10 +78,10 @@ class App {
   bindEvents() {
     this.root.addEventListener('click', (event) => this.handleClick(event));
     this.root.addEventListener('keydown', (event) => this.handleRowKeyboard(event));
-    this.dom.searchInput.addEventListener('input', () => this.updateFilters());
-    this.dom.courseFilter.addEventListener('change', () => this.updateFilters());
-    this.dom.statusFilter.addEventListener('change', () => this.updateFilters());
-    this.dom.methodFilter.addEventListener('change', () => this.updateFilters());
+    this.dom.searchInput.addEventListener('input', () => this.updateFilters(true));
+    this.dom.courseFilter.addEventListener('change', () => this.updateFilters(true));
+    this.dom.statusFilter.addEventListener('change', () => this.updateFilters(true));
+    this.dom.methodFilter.addEventListener('change', () => this.updateFilters(true));
     this.dom.form.addEventListener('submit', (event) => this.handleSubmit(event));
     window.addEventListener('hashchange', () => this.syncFromHash());
     window.addEventListener('keydown', (event) => this.handleGlobalKeydown(event));

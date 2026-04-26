@@ -23,7 +23,7 @@ export function renderStudentsTable(dom, students, currentPage, sortState, total
                 </div>
               </td>
               <td class="mono">${formatPhone(student.phone)}</td>
-              <td>${student.courses.map(renderCourseBadge).join('')}</td>
+              <td>${student.courses.flatMap((c) => c.split(',').map((p) => p.trim())).map(renderCourseBadge).join('')}</td>
               <td class="mono align-right">${formatMoney(student.payments.march, { emptyDash: true })}</td>
               <td>${renderMethodBadge(student.payments.marchMethod)}</td>
               <td class="mono align-right">${formatMoney(student.payments.april, { emptyDash: true })}</td>

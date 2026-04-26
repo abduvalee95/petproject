@@ -44,7 +44,10 @@ export function filterStudents(
       !loweredQuery ||
       student.name.toLowerCase().includes(loweredQuery) ||
       (digitsQuery ? normalizePhone(student.phone).includes(digitsQuery) : false);
-    const matchesCourse = !course || student.courses.includes(course);
+    const matchesCourse = !course || student.courses.some((c) => {
+      const parts = c.split(',').map((p) => p.trim());
+      return parts.includes(course);
+    });
     const matchesStatus = !status || getStudentStatus(student) === status;
     const matchesMethod =
       !method ||
@@ -111,10 +114,13 @@ export function getCourseCounts(students) {
   const counts = Object.fromEntries(COURSE_OPTIONS.map(({ value }) => [value, 0]));
 
   students.forEach((student) => {
-    student.courses.forEach((course) => {
-      if (counts[course] !== undefined) {
-        counts[course] += 1;
-      }
+    student.courses.forEach((courseEntry) => {
+      const parts = courseEntry.split(',').map((p) => p.trim());
+      parts.forEach((course) => {
+        if (counts[course] !== undefined) {
+          counts[course] += 1;
+        }
+      });
     });
   });
 
@@ -164,9 +170,10 @@ export function getRevenueByCourse(students) {
 
   students.forEach((student) => {
     const total = (Number(student.payments.march) || 0) + (Number(student.payments.april) || 0);
-    const divisor = student.courses.length || 1;
+    const allCourses = student.courses.flatMap((c) => c.split(',').map((p) => p.trim()));
+    const divisor = allCourses.length || 1;
 
-    student.courses.forEach((course) => {
+    allCourses.forEach((course) => {
       if (revenue[course] !== undefined) {
         revenue[course] += total / divisor;
       }
