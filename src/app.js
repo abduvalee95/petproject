@@ -26,7 +26,7 @@ class App {
     this.root = root;
     this.students = loadStudents(demoStudents);
     this.filteredStudents = [...this.students];
-    this.filters = { query: '', course: '', status: '', method: '' };
+    this.filters = { query: '', course: '', status: '', method: '', month: 'april' };
     this.sortState = { key: 'name', direction: 'asc' };
     this.currentPage = 1;
     this.activeRoute = 'dashboard';
@@ -53,6 +53,8 @@ class App {
       courseFilter: document.querySelector('#courseFilter'),
       statusFilter: document.querySelector('#statusFilter'),
       methodFilter: document.querySelector('#methodFilter'),
+      monthFilter: document.querySelector('#monthFilter'),
+      sortPaymentBtn: document.querySelector('#sortPaymentBtn'),
       studentCount: document.querySelector('#studentCount'),
       studentsBody: document.querySelector('#studentsBody'),
       pagination: document.querySelector('#pagination'),
@@ -82,6 +84,7 @@ class App {
     this.dom.courseFilter.addEventListener('change', () => this.updateFilters(true));
     this.dom.statusFilter.addEventListener('change', () => this.updateFilters(true));
     this.dom.methodFilter.addEventListener('change', () => this.updateFilters(true));
+    this.dom.monthFilter.addEventListener('change', () => this.updateFilters(true));
     this.dom.form.addEventListener('submit', (event) => this.handleSubmit(event));
     window.addEventListener('hashchange', () => this.syncFromHash());
     window.addEventListener('keydown', (event) => this.handleGlobalKeydown(event));
@@ -249,7 +252,16 @@ class App {
       course: this.dom.courseFilter.value,
       status: this.dom.statusFilter.value,
       method: this.dom.methodFilter.value,
+      month: this.dom.monthFilter.value,
     };
+
+    if (this.dom.sortPaymentBtn) {
+      this.dom.sortPaymentBtn.dataset.sort = this.filters.month;
+      // Also update current sort state if we were sorting by month payment
+      if (this.sortState.key === 'march' || this.sortState.key === 'april') {
+        this.sortState.key = this.filters.month;
+      }
+    }
 
     if (resetPage) {
       this.currentPage = 1;
@@ -297,11 +309,12 @@ class App {
     this.students = loadStudents(demoStudents);
     this.filteredStudents = [...this.students];
     this.currentPage = 1;
-    this.filters = { query: '', course: '', status: '', method: '' };
+    this.filters = { query: '', course: '', status: '', method: '', month: 'april' };
     this.dom.searchInput.value = '';
     this.dom.courseFilter.value = '';
     this.dom.statusFilter.value = '';
     this.dom.methodFilter.value = '';
+    this.dom.monthFilter.value = 'april';
     this.render();
     this.toast('Demo-данные восстановлены.', 'success');
   }
@@ -389,6 +402,7 @@ class App {
       this.currentPage,
       this.sortState,
       this.students.length,
+      this.filters.month
     );
 
     this.currentPage = currentPage;

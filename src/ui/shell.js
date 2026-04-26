@@ -147,6 +147,14 @@ export function createShell() {
                 <option value="bank">M-Bank</option>
               </select>
             </label>
+
+            <label>
+              <span class="visually-hidden">Месяц</span>
+              <select class="filter-select" id="monthFilter" name="month">
+                <option value="april">Апрель</option>
+                <option value="march">Март</option>
+              </select>
+            </label>
           </section>
 
           <section class="table-card">
@@ -159,14 +167,10 @@ export function createShell() {
                     <th><button type="button" class="th-button" data-sort="phone">Телефон</button></th>
                     <th>Курсы</th>
                     <th class="align-right">
-                      <button type="button" class="th-button" data-sort="march">Март</button>
+                      <button type="button" class="th-button" id="sortPaymentBtn" data-sort="april">Оплата</button>
                     </th>
                     <th>Способ</th>
-                    <th class="align-right">
-                      <button type="button" class="th-button" data-sort="april">Апрель</button>
-                    </th>
-                    <th>Способ</th>
-                    <th>Статус</th>
+                    <th>Статус (Общий)</th>
                   </tr>
                 </thead>
                 <tbody id="studentsBody"></tbody>

@@ -2,7 +2,7 @@ import { COURSE_THEME, PER_PAGE } from '../lib/constants.js';
 import { formatMoney, formatPhone } from '../lib/formatters.js';
 import { getStatusLabel, getStudentStatus, paginateItems } from '../lib/students.js';
 
-export function renderStudentsTable(dom, students, currentPage, sortState, totalStudents) {
+export function renderStudentsTable(dom, students, currentPage, sortState, totalStudents, selectedMonth = 'april') {
   const { pageItems, totalPages, start, currentPage: safePage } = paginateItems(
     students,
     currentPage,
@@ -24,10 +24,8 @@ export function renderStudentsTable(dom, students, currentPage, sortState, total
               </td>
               <td class="mono">${formatPhone(student.phone)}</td>
               <td>${student.courses.flatMap((c) => c.split(',').map((p) => p.trim())).map(renderCourseBadge).join('')}</td>
-              <td class="mono align-right">${formatMoney(student.payments.march, { emptyDash: true })}</td>
-              <td>${renderMethodBadge(student.payments.marchMethod)}</td>
-              <td class="mono align-right">${formatMoney(student.payments.april, { emptyDash: true })}</td>
-              <td>${renderMethodBadge(student.payments.aprilMethod)}</td>
+              <td class="mono align-right">${formatMoney(student.payments[selectedMonth], { emptyDash: true })}</td>
+              <td>${renderMethodBadge(student.payments[`${selectedMonth}Method`])}</td>
               <td>${renderStatusBadge(getStudentStatus(student))}</td>
             </tr>
           `,
