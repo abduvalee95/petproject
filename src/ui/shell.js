@@ -6,7 +6,7 @@ export function createShell() {
 
       <header class="mobile-header">
         <div style="display: flex; align-items: center; gap: 10px;">
-          <img src="/logo.png" alt="Билим Нуру Logo" style="width: 40px; height: 40px; object-fit: contain;">
+          <img src="/logo.svg" alt="Билим Нуру Logo" style="width: 40px; height: 40px; object-fit: contain;">
           <div>
             <p class="eyebrow">Окуу Борбору</p>
             <h1>Билим Нуру</h1>
@@ -28,7 +28,7 @@ export function createShell() {
 
       <aside class="sidebar" id="sidebar" aria-label="Основная навигация">
         <div class="sidebar-logo" style="text-align: center;">
-          <img src="/logo.png" alt="Билим Нуру Logo" style="width: 80px; height: 80px; object-fit: contain; margin-bottom: 12px;">
+          <img src="/logo.svg" alt="Билим Нуру Logo" style="width: 80px; height: 80px; object-fit: contain; margin-bottom: 12px;">
           <p class="eyebrow">Окуу Борбору</p>
           <h1>Билим Нуру</h1>
           <span>Управление оплатами и учениками</span>

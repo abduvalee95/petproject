@@ -6,7 +6,7 @@ export function createLoginView() {
       
       <div class="form-card" style="width: 100%; max-width: 400px; position: relative; z-index: 10; padding: 32px; margin: 20px;">
         <div style="text-align: center; margin-bottom: 28px;">
-          <img src="/logo.png" alt="Билим Нуру Logo" style="width: 80px; height: 80px; object-fit: contain; margin-bottom: 16px;">
+          <img src="/logo.svg" alt="Билим Нуру Logo" style="width: 80px; height: 80px; object-fit: contain; margin-bottom: 16px;">
           <h2 style="margin: 0; font-size: 24px;">Билим Нуру</h2>
           <p style="color: var(--text-muted); margin-top: 8px;">Вход в панель управления</p>
         </div>
