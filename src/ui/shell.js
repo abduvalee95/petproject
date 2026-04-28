@@ -38,6 +38,10 @@ export function createShell() {
           <p class="nav-label">Навигация</p>
           <button type="button" class="nav-item" data-route="dashboard">Главная</button>
           <button type="button" class="nav-item" data-route="students">Ученики</button>
+          <button type="button" class="nav-item" data-route="attendance">Посещаемость</button>
+          <button type="button" class="nav-item" data-route="teachers">Преподаватели</button>
+          <button type="button" class="nav-item" data-route="schedule">Расписание</button>
+          <button type="button" class="nav-item" data-route="journal">Журнал</button>
           <button type="button" class="nav-item" data-route="report">Отчёты</button>
           <button type="button" class="nav-item" data-action="open-add">Добавить ученика</button>
         </nav>
@@ -179,6 +183,220 @@ export function createShell() {
             </div>
             <div class="pagination" id="pagination"></div>
           </section>
+        </section>
+
+        <section class="page" data-page="attendance" aria-labelledby="attendanceTitle">
+          <div class="topbar">
+            <div class="page-title">
+              <p class="eyebrow">Учёт</p>
+              <h2 id="attendanceTitle">Посещаемость</h2>
+              <p>Отмечайте присутствие учеников по дням.</p>
+            </div>
+          </div>
+
+          <div class="date-nav" id="attendanceDateNav"></div>
+
+          <div class="stats-grid" id="attendanceStats"></div>
+
+          <section class="course-attendance-summary" id="attendanceCourseSummary"></section>
+
+          <section class="table-card">
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Имя</th>
+                    <th>Курсы</th>
+                    <th>Посещаемость</th>
+                  </tr>
+                </thead>
+                <tbody id="attendanceBody"></tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+        <section class="page" data-page="teachers" aria-labelledby="teachersTitle">
+          <div class="topbar">
+            <div class="page-title">
+              <p class="eyebrow">Команда</p>
+              <h2 id="teachersTitle">Преподаватели</h2>
+              <p id="teacherCount">Список преподавателей и их курсы.</p>
+            </div>
+            <div class="topbar-actions">
+              <button type="button" class="btn btn-primary" data-action="add-teacher">Добавить преподавателя</button>
+            </div>
+          </div>
+
+          <section class="table-controls" aria-label="Фильтры по преподавателям">
+            <label class="search-box">
+              <span class="visually-hidden">Поиск по имени</span>
+              <input id="teacherSearch" name="teacherSearch" type="search" placeholder="Поиск по имени..." autocomplete="off" />
+            </label>
+            <label>
+              <span class="visually-hidden">Фильтр по курсу</span>
+              <select class="filter-select" id="teacherCourseFilter" name="course">
+                <option value="">Все курсы</option>
+                <option value="IT">IT</option>
+                <option value="Kids">Kids</option>
+                <option value="En">Английский</option>
+              </select>
+            </label>
+          </section>
+
+          <section class="table-card">
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Имя</th>
+                    <th>Телефон</th>
+                    <th>Курсы</th>
+                    <th>Примечание</th>
+                    <th>Действия</th>
+                  </tr>
+                </thead>
+                <tbody id="teachersBody"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- Teacher form modal -->
+          <div class="modal-overlay hidden" id="teacherModal" aria-hidden="true">
+            <div class="modal" role="dialog" aria-modal="true" aria-labelledby="teacherModalTitle">
+              <div class="modal-header">
+                <div>
+                  <p class="eyebrow">Преподаватель</p>
+                  <h3 id="teacherModalTitle">Добавить</h3>
+                </div>
+                <button type="button" class="icon-close" data-action="close-teacher-modal" aria-label="Закрыть">×</button>
+              </div>
+              <div class="modal-body">
+                <form id="teacherForm" class="form-grid" novalidate>
+                  <div class="form-group form-group--full">
+                    <label class="form-label" for="teacherName">Полное имя</label>
+                    <input class="form-input" id="teacherName" name="name" type="text" maxlength="80" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="teacherPhone">Телефон</label>
+                    <input class="form-input" id="teacherPhone" name="phone" type="tel" maxlength="16" />
+                  </div>
+                  <fieldset class="form-group">
+                    <legend class="form-label">Курсы</legend>
+                    <div class="checkbox-group">
+                      <label class="checkbox-item"><input type="checkbox" name="courses" value="IT" /> IT</label>
+                      <label class="checkbox-item"><input type="checkbox" name="courses" value="Kids" /> Kids</label>
+                      <label class="checkbox-item"><input type="checkbox" name="courses" value="En" /> Английский</label>
+                    </div>
+                  </fieldset>
+                  <div class="form-group form-group--full">
+                    <label class="form-label" for="teacherNote">Примечание</label>
+                    <input class="form-input" id="teacherNote" name="note" type="text" maxlength="160" placeholder="Специализация,备注" />
+                  </div>
+                  <div class="form-actions form-group--full">
+                    <button type="submit" class="btn btn-primary" id="teacherSubmitBtn">Сохранить</button>
+                    <button type="button" class="btn btn-secondary" data-action="close-teacher-modal">Отмена</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="page" data-page="schedule" aria-labelledby="scheduleTitle">
+          <div class="topbar">
+            <div class="page-title">
+              <p class="eyebrow">Расписание</p>
+              <h2 id="scheduleTitle">Время занятий</h2>
+              <p>Расписание по дням недели с привязкой к преподавателям.</p>
+            </div>
+            <div class="topbar-actions">
+              <button type="button" class="btn btn-primary" data-action="add-schedule">Добавить занятие</button>
+            </div>
+          </div>
+
+          <div class="schedule-today-card" id="todaySchedule"></div>
+
+          <div id="scheduleBody"></div>
+
+          <!-- Schedule form modal -->
+          <div class="modal-overlay hidden" id="scheduleModal" aria-hidden="true">
+            <div class="modal" role="dialog" aria-modal="true" aria-labelledby="scheduleModalTitle">
+              <div class="modal-header">
+                <div>
+                  <p class="eyebrow">Занятие</p>
+                  <h3 id="scheduleModalTitle">Добавить</h3>
+                </div>
+                <button type="button" class="icon-close" data-action="close-schedule-modal" aria-label="Закрыть">×</button>
+              </div>
+              <div class="modal-body">
+                <form id="scheduleForm" class="form-grid" novalidate>
+                  <div class="form-group">
+                    <label class="form-label" for="scheduleDay">День недели</label>
+                    <select class="form-input" id="scheduleDay" name="day">
+                      <option value="mon">Понедельник</option>
+                      <option value="tue">Вторник</option>
+                      <option value="wed">Среда</option>
+                      <option value="thu">Четверг</option>
+                      <option value="fri">Пятница</option>
+                      <option value="sat">Суббота</option>
+                      <option value="sun">Воскресенье</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="scheduleTime">Время</label>
+                    <select class="form-input" id="scheduleTime" name="time">
+                      <option value="09:00">09:00</option>
+                      <option value="10:00">10:00</option>
+                      <option value="11:00">11:00</option>
+                      <option value="12:00">12:00</option>
+                      <option value="13:00">13:00</option>
+                      <option value="14:00">14:00</option>
+                      <option value="15:00">15:00</option>
+                      <option value="16:00">16:00</option>
+                      <option value="17:00">17:00</option>
+                      <option value="18:00">18:00</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="scheduleCourse">Курс</label>
+                    <select class="form-input" id="scheduleCourse" name="course">
+                      <option value="IT">IT</option>
+                      <option value="Kids">Kids</option>
+                      <option value="En">Английский</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="scheduleTeacher">Преподаватель</label>
+                    <select class="form-input" id="scheduleTeacher" name="teacherId"></select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="scheduleRoom">Кабинет</label>
+                    <input class="form-input" id="scheduleRoom" name="room" type="text" maxlength="10" placeholder="101" />
+                  </div>
+                  <div class="form-actions form-group--full">
+                    <button type="submit" class="btn btn-primary" id="scheduleSubmitBtn">Сохранить</button>
+                    <button type="button" class="btn btn-secondary" data-action="close-schedule-modal">Отмена</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="page" data-page="journal" aria-labelledby="journalTitle">
+          <div class="topbar">
+            <div class="page-title">
+              <p class="eyebrow">Журнал</p>
+              <h2 id="journalTitle">Классный журнал</h2>
+              <p>Темы уроков, оценки и домашние задания.</p>
+            </div>
+          </div>
+
+          <div class="date-nav" id="journalDateNav"></div>
+          <div class="stats-grid" id="journalStats"></div>
+          <div id="journalBody"></div>
         </section>
 
         <section class="page" data-page="report" aria-labelledby="reportTitle">

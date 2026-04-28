@@ -5,7 +5,8 @@ export const demoStudents = [
     phone: '996 997 00 14 13',
     courses: ['IT, Kids'],
     note: 'апрел 50%',
-    payments: { march: 0, april: 0, marchMethod: '', aprilMethod: '' }
+    payments: { march: 0, april: 0, marchMethod: '', aprilMethod: '' },
+    attendance: { '2026-04-21': 'absent', '2026-04-22': 'present', '2026-04-23': 'absent', '2026-04-24': 'excused', '2026-04-25': 'absent' }
   },
   {
     id: 2,
@@ -13,7 +14,8 @@ export const demoStudents = [
     phone: '556980515',
     courses: ['En'],
     note: '6 лет',
-    payments: { march: 4000, april: 4000, marchMethod: 'cash', aprilMethod: 'bank' }
+    payments: { march: 4000, april: 4000, marchMethod: 'cash', aprilMethod: 'bank' },
+    attendance: { '2026-04-21': 'present', '2026-04-22': 'present', '2026-04-23': 'present', '2026-04-24': 'present', '2026-04-25': 'present' }
   },
   {
     id: 3,
@@ -21,7 +23,8 @@ export const demoStudents = [
     phone: '559150594',
     courses: ['En'],
     note: 'skidka',
-    payments: { march: 3000, april: 3000, marchMethod: 'bank', aprilMethod: 'bank' }
+    payments: { march: 3000, april: 3000, marchMethod: 'bank', aprilMethod: 'bank' },
+    attendance: { '2026-04-21': 'present', '2026-04-22': 'excused', '2026-04-23': 'present', '2026-04-24': 'present', '2026-04-25': 'present' }
   },
   {
     id: 4,
@@ -29,7 +32,8 @@ export const demoStudents = [
     phone: '550064693',
     courses: ['En'],
     note: 'skidka',
-    payments: { march: 3000, april: 3000, marchMethod: 'bank', aprilMethod: '' }
+    payments: { march: 3000, april: 3000, marchMethod: 'bank', aprilMethod: '' },
+    attendance: { '2026-04-21': 'present', '2026-04-22': 'present', '2026-04-23': 'absent', '2026-04-24': 'present', '2026-04-25': 'excused' }
   },
   {
     id: 5,
@@ -37,7 +41,8 @@ export const demoStudents = [
     phone: '996 (990) 17-11-21',
     courses: ['IT, Kids', 'En'],
     note: '',
-    payments: { march: 7000, april: 7000, marchMethod: 'bank', aprilMethod: 'bank' }
+    payments: { march: 7000, april: 7000, marchMethod: 'bank', aprilMethod: 'bank' },
+    attendance: { '2026-04-21': 'present', '2026-04-22': 'present', '2026-04-23': 'present', '2026-04-24': 'present', '2026-04-25': 'present' }
   },
   {
     id: 6,
@@ -45,7 +50,8 @@ export const demoStudents = [
     phone: '996 (556) 35-35-18',
     courses: ['En'],
     note: '',
-    payments: { march: 4000, april: 4000, marchMethod: 'bank', aprilMethod: 'cash' }
+    payments: { march: 4000, april: 4000, marchMethod: 'bank', aprilMethod: 'cash' },
+    attendance: { '2026-04-21': 'present', '2026-04-22': 'absent', '2026-04-23': 'present', '2026-04-24': 'absent', '2026-04-25': 'present' }
   },
   {
     id: 7,
@@ -53,7 +59,8 @@ export const demoStudents = [
     phone: '996 (755) 04-07-44',
     courses: ['En'],
     note: '1ой',
-    payments: { march: 4000, april: 0, marchMethod: 'cash', aprilMethod: '' }
+    payments: { march: 4000, april: 0, marchMethod: 'cash', aprilMethod: '' },
+    attendance: { '2026-04-21': 'absent', '2026-04-22': 'absent', '2026-04-23': 'absent', '2026-04-24': 'excused', '2026-04-25': 'absent' }
   },
   {
     id: 8,
@@ -61,7 +68,8 @@ export const demoStudents = [
     phone: '996 (553) 70-10-10',
     courses: ['En'],
     note: '',
-    payments: { march: 3000, april: 3000, marchMethod: 'cash', aprilMethod: 'cash' }
+    payments: { march: 3000, april: 3000, marchMethod: 'cash', aprilMethod: 'cash' },
+    attendance: { '2026-04-21': 'present', '2026-04-22': 'present', '2026-04-23': 'present', '2026-04-24': 'present', '2026-04-25': 'present' }
   },
   {
     id: 9,
@@ -69,7 +77,8 @@ export const demoStudents = [
     phone: '550494963/558067070',
     courses: ['IT, Kids'],
     note: '',
-    payments: { march: 4000, april: 4000, marchMethod: 'bank', aprilMethod: 'cash' }
+    payments: { march: 4000, april: 4000, marchMethod: 'bank', aprilMethod: 'cash' },
+    attendance: { '2026-04-21': 'present', '2026-04-22': 'present', '2026-04-23': 'excused', '2026-04-24': 'present', '2026-04-25': 'present' }
   },
   {
     id: 10,
@@ -77,7 +86,8 @@ export const demoStudents = [
     phone: '996 (550) 58-50-50/996 (551) 11 69 51',
     courses: ['IT'],
     note: '',
-    payments: { march: 6000, april: 0, marchMethod: '', aprilMethod: '' }
+    payments: { march: 6000, april: 0, marchMethod: '', aprilMethod: '' },
+    attendance: { '2026-04-21': 'absent', '2026-04-22': 'absent', '2026-04-23': 'absent', '2026-04-24': 'absent', '2026-04-25': 'absent' }
   },
   {
     id: 11,
@@ -85,7 +95,8 @@ export const demoStudents = [
     phone: '996 (557) 87-47-91',
     courses: ['IT'],
     note: '',
-    payments: { march: 6000, april: 0, marchMethod: 'bank', aprilMethod: '' }
+    payments: { march: 6000, april: 0, marchMethod: 'bank', aprilMethod: '' },
+    attendance: { '2026-04-21': 'present', '2026-04-22': 'absent', '2026-04-23': 'present', '2026-04-24': 'absent', '2026-04-25': 'excused' }
   },
   {
     id: 12,
@@ -93,7 +104,8 @@ export const demoStudents = [
     phone: '557419161',
     courses: ['En'],
     note: '',
-    payments: { march: 3500, april: 3500, marchMethod: 'bank', aprilMethod: 'bank' }
+    payments: { march: 3500, april: 3500, marchMethod: 'bank', aprilMethod: 'bank' },
+    attendance: { '2026-04-21': 'present', '2026-04-22': 'present', '2026-04-23': 'present', '2026-04-24': 'present', '2026-04-25': 'present' }
   },
   {
     id: 13,
@@ -101,7 +113,8 @@ export const demoStudents = [
     phone: '998357737',
     courses: ['En'],
     note: '',
-    payments: { march: 3500, april: 3500, marchMethod: 'cash', aprilMethod: 'cash' }
+    payments: { march: 3500, april: 3500, marchMethod: 'cash', aprilMethod: 'cash' },
+    attendance: { '2026-04-21': 'present', '2026-04-22': 'excused', '2026-04-23': 'present', '2026-04-24': 'present', '2026-04-25': 'present' }
   },
   {
     id: 14,
@@ -109,7 +122,8 @@ export const demoStudents = [
     phone: '702237623',
     courses: ['IT'],
     note: '',
-    payments: { march: 6000, april: 6000, marchMethod: 'bank', aprilMethod: 'bank' }
+    payments: { march: 6000, april: 6000, marchMethod: 'bank', aprilMethod: 'bank' },
+    attendance: { '2026-04-21': 'present', '2026-04-22': 'present', '2026-04-23': 'present', '2026-04-24': 'present', '2026-04-25': 'present' }
   },
   {
     id: 15,
@@ -117,7 +131,8 @@ export const demoStudents = [
     phone: '556424033',
     courses: ['En'],
     note: 'mart oyida 11000 to‘lagan',
-    payments: { march: 11000, april: 3500, marchMethod: 'bank', aprilMethod: 'bank' }
+    payments: { march: 11000, april: 3500, marchMethod: 'bank', aprilMethod: 'bank' },
+    attendance: { '2026-04-21': 'present', '2026-04-22': 'absent', '2026-04-23': 'excused', '2026-04-24': 'present', '2026-04-25': 'absent' }
   },
   {
     id: 16,

@@ -1,4 +1,9 @@
 import { demoStudents } from './data/demoStudents.js';
+import { demoTeachers } from './data/demoTeachers.js';
+import { demoSchedule } from './data/demoSchedule.js';
+import { formatDate, setAttendance } from './lib/attendance.js';
+import { createJournalEntry, setGrade, upsertJournalEntry, validateJournalEntry } from './lib/journal.js';
+import { createScheduleEntry, deleteScheduleEntry, upsertScheduleEntry } from './lib/schedule.js';
 import { downloadCsv } from './lib/csv.js';
 import { ROUTES } from './lib/constants.js';
 import {
@@ -8,14 +13,19 @@ import {
   upsertStudent,
   validateStudent,
 } from './lib/students.js';
-import { loadStudents, resetStudents, saveStudents } from './lib/storage.js';
+import { createTeacherFromForm, upsertTeacher, validateTeacher } from './lib/teachers.js';
+import { loadStudents, loadTeachers, loadSchedule, loadJournal, resetAll, saveStudents, saveTeachers, saveSchedule, saveJournal } from './lib/storage.js';
+import { renderAttendancePage } from './ui/attendance.js';
 import { renderDashboard } from './ui/dashboard.js';
+import { renderJournalPage } from './ui/journal.js';
 import { renderStudentModal } from './ui/modal.js';
 import { renderReports } from './ui/reports.js';
+import { renderSchedulePage } from './ui/schedule.js';
 import { createShell } from './ui/shell.js';
 import { createLoginView } from './ui/login.js';
 import { clearStudentForm, fillStudentForm, readStudentForm, setFormMode } from './ui/studentForm.js';
 import { renderStudentsTable } from './ui/studentsTable.js';
+import { renderTeachersPage } from './ui/teachers.js';
 import { showToast } from './ui/toast.js';
 
 export function createApp(root) {
@@ -34,6 +44,13 @@ class App {
     this.editingId = null;
     this.modalStudentId = null;
     this.lastFocusedElement = null;
+    this.attendanceDate = formatDate(new Date());
+    this.teachers = loadTeachers(demoTeachers);
+    this.schedule = loadSchedule(demoSchedule);
+    this.journal = loadJournal([]);
+    this.journalDate = formatDate(new Date());
+    this.editingTeacherId = null;
+    this.editingScheduleId = null;
   }
 
   init() {
@@ -110,6 +127,26 @@ class App {
       modalBody: document.querySelector('#modalBody'),
       toastContainer: document.querySelector('#toastContainer'),
       sidebarToggle: document.querySelector('[data-action="toggle-sidebar"]'),
+      attendanceStats: document.querySelector('#attendanceStats'),
+      attendanceDateNav: document.querySelector('#attendanceDateNav'),
+      attendanceCourseSummary: document.querySelector('#attendanceCourseSummary'),
+      attendanceBody: document.querySelector('#attendanceBody'),
+      teachersBody: document.querySelector('#teachersBody'),
+      teacherCount: document.querySelector('#teacherCount'),
+      teacherSearch: document.querySelector('#teacherSearch'),
+      teacherCourseFilter: document.querySelector('#teacherCourseFilter'),
+      teacherModal: document.querySelector('#teacherModal'),
+      teacherForm: document.querySelector('#teacherForm'),
+      teacherModalTitle: document.querySelector('#teacherModalTitle'),
+      scheduleBody: document.querySelector('#scheduleBody'),
+      todaySchedule: document.querySelector('#todaySchedule'),
+      scheduleModal: document.querySelector('#scheduleModal'),
+      scheduleForm: document.querySelector('#scheduleForm'),
+      scheduleModalTitle: document.querySelector('#scheduleModalTitle'),
+      scheduleTeacher: document.querySelector('#scheduleTeacher'),
+      journalDateNav: document.querySelector('#journalDateNav'),
+      journalStats: document.querySelector('#journalStats'),
+      journalBody: document.querySelector('#journalBody'),
     };
   }
 
@@ -122,6 +159,10 @@ class App {
     this.dom.methodFilter.addEventListener('change', () => this.updateFilters(true));
     this.dom.monthFilter.addEventListener('change', () => this.updateFilters(true));
     this.dom.form.addEventListener('submit', (event) => this.handleSubmit(event));
+    this.dom.teacherSearch.addEventListener('input', () => this.renderTeachers());
+    this.dom.teacherCourseFilter.addEventListener('change', () => this.renderTeachers());
+    this.dom.teacherForm.addEventListener('submit', (event) => this.handleTeacherSubmit(event));
+    this.dom.scheduleForm.addEventListener('submit', (event) => this.handleScheduleSubmit(event));
     window.addEventListener('hashchange', () => this.syncFromHash());
     window.addEventListener('keydown', (event) => this.handleGlobalKeydown(event));
   }
@@ -137,6 +178,9 @@ class App {
     const sortTrigger = event.target.closest('[data-sort]');
     const pageTrigger = event.target.closest('[data-page]');
     const rowTrigger = event.target.closest('[data-student-id]');
+    const attendanceDateTrigger = event.target.closest('[data-attendance-date]');
+    const attendanceBtn = event.target.closest('[data-attendance]');
+    const journalDateTrigger = event.target.closest('[data-journal-date]');
 
     if (routeTrigger) {
       this.setRoute(routeTrigger.dataset.route);
@@ -156,6 +200,25 @@ class App {
     if (pageTrigger && pageTrigger.closest('.pagination')) {
       this.currentPage = Number(pageTrigger.dataset.page) || 1;
       this.renderStudents();
+      return;
+    }
+
+    if (attendanceDateTrigger) {
+      this.attendanceDate = attendanceDateTrigger.dataset.attendanceDate;
+      this.renderAttendance();
+      return;
+    }
+
+    if (attendanceBtn) {
+      const studentId = Number(attendanceBtn.dataset.studentId);
+      const status = attendanceBtn.dataset.attendance;
+      this.markAttendance(studentId, status);
+      return;
+    }
+
+    if (journalDateTrigger) {
+      this.journalDate = journalDateTrigger.dataset.journalDate;
+      this.renderJournal();
       return;
     }
 
@@ -224,6 +287,96 @@ class App {
         this.closeModal();
         this.toast('Ученик удален.', 'success');
       }
+      return;
+    }
+
+    if (action === 'add-teacher') {
+      this.editingTeacherId = null;
+      this.dom.teacherForm.reset();
+      this.dom.teacherModalTitle.textContent = 'Добавить преподавателя';
+      this.dom.teacherModal.classList.remove('hidden');
+      return;
+    }
+
+    if (action === 'close-teacher-modal') {
+      this.dom.teacherModal.classList.add('hidden');
+      this.editingTeacherId = null;
+      return;
+    }
+
+    if (action === 'edit-teacher') {
+      const id = Number(trigger.dataset.teacherId);
+      const teacher = this.teachers.find((t) => t.id === id);
+      if (!teacher) return;
+      this.editingTeacherId = id;
+      this.dom.teacherModalTitle.textContent = 'Редактировать';
+      this.dom.teacherForm.name.value = teacher.name;
+      this.dom.teacherForm.phone.value = teacher.phone;
+      this.dom.teacherForm.note.value = teacher.note;
+      this.dom.teacherForm.querySelectorAll('input[name="courses"]').forEach((cb) => {
+        cb.checked = teacher.courses.some((c) => c.split(',').map((p) => p.trim()).includes(cb.value));
+      });
+      this.dom.teacherModal.classList.remove('hidden');
+      return;
+    }
+
+    if (action === 'delete-teacher') {
+      const id = Number(trigger.dataset.teacherId);
+      if (confirm('Удалить преподавателя?')) {
+        this.teachers = this.teachers.filter((t) => t.id !== id);
+        saveTeachers(this.teachers);
+        this.renderTeachers();
+        this.toast('Преподаватель удален.', 'success');
+      }
+      return;
+    }
+
+    if (action === 'add-schedule') {
+      this.editingScheduleId = null;
+      this.dom.scheduleForm.reset();
+      this.dom.scheduleModalTitle.textContent = 'Добавить занятие';
+      this.populateTeacherSelect();
+      this.dom.scheduleModal.classList.remove('hidden');
+      return;
+    }
+
+    if (action === 'close-schedule-modal') {
+      this.dom.scheduleModal.classList.add('hidden');
+      this.editingScheduleId = null;
+      return;
+    }
+
+    if (action === 'edit-schedule') {
+      const id = Number(trigger.dataset.scheduleId);
+      const entry = this.schedule.find((e) => e.id === id);
+      if (!entry) return;
+      this.editingScheduleId = id;
+      this.dom.scheduleModalTitle.textContent = 'Редактировать';
+      this.dom.scheduleForm.day.value = entry.day;
+      this.dom.scheduleForm.time.value = entry.time;
+      this.dom.scheduleForm.course.value = entry.course;
+      this.dom.scheduleForm.room.value = entry.room;
+      this.populateTeacherSelect(entry.teacherId);
+      this.dom.scheduleModal.classList.remove('hidden');
+      return;
+    }
+
+    if (action === 'delete-schedule') {
+      const id = Number(trigger.dataset.scheduleId);
+      if (confirm('Удалить занятие из расписания?')) {
+        this.schedule = deleteScheduleEntry(this.schedule, id);
+        saveSchedule(this.schedule);
+        this.renderSchedule();
+        this.toast('Занятие удалено.', 'success');
+      }
+      return;
+    }
+
+    if (action === 'save-journal') {
+      const scheduleId = Number(trigger.dataset.scheduleId);
+      const entryId = trigger.dataset.entryId ? Number(trigger.dataset.entryId) : null;
+      const date = trigger.dataset.date;
+      this.saveJournalEntry(scheduleId, entryId, date);
       return;
     }
   }
@@ -358,8 +511,11 @@ class App {
   }
 
   resetDemoData() {
-    resetStudents();
+    resetAll();
     this.students = loadStudents(demoStudents);
+    this.teachers = loadTeachers(demoTeachers);
+    this.schedule = loadSchedule(demoSchedule);
+    this.journal = loadJournal([]);
     this.filteredStudents = [...this.students];
     this.currentPage = 1;
     this.filters = { query: '', course: '', status: '', method: '', month: 'april' };
@@ -432,6 +588,22 @@ class App {
       this.renderStudents();
     }
 
+    if (this.activeRoute === 'attendance') {
+      this.renderAttendance();
+    }
+
+    if (this.activeRoute === 'teachers') {
+      this.renderTeachers();
+    }
+
+    if (this.activeRoute === 'schedule') {
+      this.renderSchedule();
+    }
+
+    if (this.activeRoute === 'journal') {
+      this.renderJournal();
+    }
+
     if (this.activeRoute === 'report') {
       renderReports(this.dom, this.students);
     }
@@ -459,6 +631,130 @@ class App {
     );
 
     this.currentPage = currentPage;
+  }
+
+  renderAttendance() {
+    renderAttendancePage(this.dom, this.students, this.attendanceDate);
+  }
+
+  markAttendance(studentId, status) {
+    const student = this.students.find((s) => s.id === studentId);
+    if (!student) return;
+
+    const currentStatus = (student.attendance || {})[this.attendanceDate] || '';
+    const newStatus = currentStatus === status ? '' : status;
+
+    this.students = setAttendance(this.students, studentId, this.attendanceDate, newStatus);
+    saveStudents(this.students);
+    this.renderAttendance();
+  }
+
+  renderTeachers() {
+    const filters = {
+      query: this.dom.teacherSearch?.value || '',
+      course: this.dom.teacherCourseFilter?.value || '',
+    };
+    renderTeachersPage(this.dom, this.teachers, filters);
+  }
+
+  renderSchedule() {
+    renderSchedulePage(this.dom, this.schedule, this.teachers);
+  }
+
+  renderJournal() {
+    renderJournalPage(this.dom, this.journal, this.schedule, this.teachers, this.students, this.journalDate);
+  }
+
+  handleTeacherSubmit(event) {
+    event.preventDefault();
+    const form = this.dom.teacherForm;
+    const courses = Array.from(form.querySelectorAll('input[name="courses"]:checked')).map((cb) => cb.value);
+    const payload = {
+      name: form.name.value,
+      phone: form.phone.value,
+      courses,
+      note: form.note.value,
+    };
+
+    const errors = validateTeacher(payload);
+    if (errors.length) {
+      this.toast(errors[0], 'error');
+      return;
+    }
+
+    const id = this.editingTeacherId ?? Date.now();
+    const isEdit = Boolean(this.editingTeacherId);
+    const teacher = createTeacherFromForm(payload, id);
+    this.teachers = upsertTeacher(this.teachers, teacher);
+    saveTeachers(this.teachers);
+    this.editingTeacherId = null;
+    this.dom.teacherModal.classList.add('hidden');
+    this.renderTeachers();
+    this.toast(isEdit ? 'Преподаватель обновлен.' : 'Преподаватель добавлен.', 'success');
+  }
+
+  handleScheduleSubmit(event) {
+    event.preventDefault();
+    const form = this.dom.scheduleForm;
+    const payload = {
+      day: form.day.value,
+      time: form.time.value,
+      course: form.course.value,
+      teacherId: form.teacherId.value,
+      room: form.room.value,
+    };
+
+    const id = this.editingScheduleId ?? Date.now();
+    const entry = createScheduleEntry(payload, id);
+    this.schedule = upsertScheduleEntry(this.schedule, entry);
+    saveSchedule(this.schedule);
+    this.editingScheduleId = null;
+    this.dom.scheduleModal.classList.add('hidden');
+    this.renderSchedule();
+    this.toast('Занятие сохранено.', 'success');
+  }
+
+  populateTeacherSelect(selectedId) {
+    const select = this.dom.scheduleTeacher;
+    select.innerHTML = '<option value="">Выберите преподавателя</option>' +
+      this.teachers.map((t) =>
+        `<option value="${t.id}" ${t.id === selectedId ? 'selected' : ''}>${t.name}</option>`
+      ).join('');
+  }
+
+  saveJournalEntry(scheduleId, entryId, date) {
+    const slot = this.dom.journalBody.querySelector(`[data-schedule-id="${scheduleId}"]`);
+    if (!slot) return;
+
+    const topicInput = slot.querySelector('[data-journal-field="topic"]');
+    const homeworkInput = slot.querySelector('[data-journal-field="homework"]');
+    const noteInput = slot.querySelector('[data-journal-field="note"]');
+
+    const topic = topicInput?.value || '';
+    const homework = homeworkInput?.value || '';
+    const note = noteInput?.value || '';
+
+    const gradeInputs = slot.querySelectorAll('.grade-input');
+    const grades = {};
+    gradeInputs.forEach((input) => {
+      const studentId = input.dataset.gradeStudent;
+      const value = input.value.trim();
+      if (value) grades[studentId] = value;
+    });
+
+    const payload = { date, scheduleId, topic, homework, grades, note };
+    const errors = validateJournalEntry(payload);
+    if (errors.length) {
+      this.toast(errors[0], 'error');
+      return;
+    }
+
+    const id = entryId || Date.now();
+    const entry = createJournalEntry({ ...payload, id }, id);
+    this.journal = upsertJournalEntry(this.journal, entry);
+    saveJournal(this.journal);
+    this.renderJournal();
+    this.toast('Журнал сохранен.', 'success');
   }
 
   toast(message, tone) {

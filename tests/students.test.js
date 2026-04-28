@@ -109,6 +109,7 @@ test('creates normalized student entities from form payloads', () => {
     courses: ['IT'],
     note: 'test',
     payments: { march: 5000, april: 0, marchMethod: 'cash', aprilMethod: '' },
+    attendance: {},
   });
 });
 

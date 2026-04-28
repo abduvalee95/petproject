@@ -6,6 +6,7 @@ export function cloneStudent(student) {
     ...student,
     courses: [...student.courses],
     payments: { ...student.payments },
+    attendance: student.attendance ? { ...student.attendance } : {},
   };
 }
 
@@ -253,6 +254,7 @@ export function createStudentFromForm(payload, id = Date.now()) {
       marchMethod: Number(payload.march) > 0 ? payload.marchMethod : '',
       aprilMethod: Number(payload.april) > 0 ? payload.aprilMethod : '',
     },
+    attendance: {},
   };
 }
 

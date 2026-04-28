@@ -1,4 +1,5 @@
 import Chart from 'chart.js/auto';
+import { getAttendanceRate, formatDate as formatAttDate } from '../lib/attendance.js';
 import { getCourseCounts, getDashboardStats, getPaymentMethodCounts, getTotals } from '../lib/students.js';
 
 let courseChart;
@@ -10,6 +11,17 @@ export function renderDashboard(dom, students) {
   const courseCounts = getCourseCounts(students);
   const methodCounts = getPaymentMethodCounts(students);
   const totals = getTotals(students);
+  const todayStr = formatAttDate(new Date());
+  const attendanceRate = getAttendanceRate(students, todayStr);
+
+  stats.push({
+    key: 'attendance',
+    label: 'Посещаемость сегодня',
+    value: `${attendanceRate}%`,
+    sub: `Дата: ${todayStr}`,
+    tone: 'info',
+    icon: '📋',
+  });
 
   dom.statsGrid.innerHTML = stats
     .map(

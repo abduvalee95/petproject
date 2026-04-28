@@ -12,6 +12,7 @@ const fallback = [
     courses: ['IT'],
     note: '',
     payments: { march: 0, april: 0, marchMethod: '', aprilMethod: '' },
+    attendance: {},
   },
 ];
 

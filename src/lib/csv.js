@@ -16,20 +16,29 @@ export function buildCsvRows(students) {
       'Апрель (сом)',
       'Способ (апрель)',
       'Статус',
+      'Дней посещено',
+      'Дней пропущено',
       'Примечание',
     ],
-    ...students.map((student, index) => [
-      index + 1,
-      student.name,
-      student.phone,
-      student.courses.join(', '),
-      student.payments.march || 0,
-      student.payments.marchMethod,
-      student.payments.april || 0,
-      student.payments.aprilMethod,
-      getStatusLabel(getStudentStatus(student)),
-      student.note,
-    ]),
+    ...students.map((student, index) => {
+      const att = student.attendance || {};
+      const presentDays = Object.values(att).filter((s) => s === 'present').length;
+      const absentDays = Object.values(att).filter((s) => s === 'absent').length;
+      return [
+        index + 1,
+        student.name,
+        student.phone,
+        student.courses.join(', '),
+        student.payments.march || 0,
+        student.payments.marchMethod,
+        student.payments.april || 0,
+        student.payments.aprilMethod,
+        getStatusLabel(getStudentStatus(student)),
+        presentDays,
+        absentDays,
+        student.note,
+      ];
+    }),
   ];
 }
 

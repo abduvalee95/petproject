@@ -1,4 +1,5 @@
-import { COURSE_THEME } from '../lib/constants.js';
+import { ATTENDANCE_STATUS, COURSE_THEME } from '../lib/constants.js';
+import { formatDateLabel, getStudentAttendanceHistory } from '../lib/attendance.js';
 import { formatMoney, formatPhone, getInitials } from '../lib/formatters.js';
 import { getStatusLabel, getStudentStatus } from '../lib/students.js';
 
@@ -44,6 +45,8 @@ export function renderStudentModal(node, student) {
       <span>Итого оплачено</span>
       <strong class="mono">${formatMoney(total)}</strong>
     </div>
+
+    ${renderAttendanceSection(student)}
   `;
 }
 
@@ -74,4 +77,28 @@ function statusTone(status) {
   }
 
   return 'yellow';
+}
+
+function renderAttendanceSection(student) {
+  const history = getStudentAttendanceHistory(student);
+  if (!history.length) {
+    return '';
+  }
+
+  const rows = history.slice(0, 10).map(({ date, status }) => {
+    const tone = status === 'present' ? 'green' : status === 'absent' ? 'red' : 'yellow';
+    return `
+      <div class="att-history-row">
+        <span class="att-history-date">${formatDateLabel(date)}</span>
+        <span class="badge badge--${tone}">${ATTENDANCE_STATUS[status]}</span>
+      </div>
+    `;
+  }).join('');
+
+  return `
+    <div class="att-history">
+      <p class="att-history-title">Посещаемость (последние записи)</p>
+      ${rows}
+    </div>
+  `;
 }
